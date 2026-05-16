@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌤️ Clima em Tempo Real</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Tela de Permissão -->
+        <div id="permission-screen" class="screen active">
+            <div class="card permission-card">
+                <div class="weather-icon-large">
+                    <i class="fas fa-cloud-sun"></i>
+                </div>
+                <h1>Clima em Tempo Real</h1>
+                <p>Para mostrar o clima preciso da sua região, precisamos acessar sua localização.</p>
+                <button id="btn-allow" class="btn-primary">
+                    <i class="fas fa-location-dot"></i>
+                    Permitir Localização
+                </button>
+                <p class="privacy-text">
+                    <i class="fas fa-shield-halved"></i>
+                    Seus dados estão seguros
+                </p>
+            </div>
+        </div>
+
+        <!-- Tela Principal -->
+        <div id="main-screen" class="screen">
+            <div class="card weather-card">
+                <div class="weather-header">
+                    <div class="weather-icon-animated">
+                        <i class="fas fa-sun" id="weather-icon"></i>
+                    </div>
+                    <div class="temperature" id="temperature">--°C</div>
+                    <div class="weather-desc" id="weather-desc">Carregando...</div>
+                </div>
+                
+                <div class="weather-details">
+                    <div class="detail-item">
+                        <i class="fas fa-droplet"></i>
+                        <span id="humidity">--%</span>
+                        <small>Umidade</small>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-wind"></i>
+                        <span id="wind">-- km/h</span>
+                        <small>Vento</small>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-eye"></i>
+                        <span id="visibility">-- km</span>
+                        <small>Visibilidade</small>
+                    </div>
+                </div>
+
+                <div class="location-info">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="location-name">Detectando...</span>
+                </div>
+
+                <div class="status-bar">
+                    <div class="status-dot active"></div>
+                    <span id="status-text">Conectado • Atualiza a cada 30s</span>
+                </div>
+
+                <div id="forecast" class="forecast-container">
+                    <!-- Previsão será inserida via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicador de atividade em background -->
+        <div id="bg-indicator" class="bg-indicator hidden">
+            <div class="pulse-dot"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
