@@ -2,81 +2,262 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌤️ Clima em Tempo Real</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <title>Clima em Tempo Real</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Tela de Permissão -->
-        <div id="permission-screen" class="screen active">
-            <div class="card permission-card">
-                <div class="weather-icon-large">
+    <div class="app">
+
+        <!-- ===== TELA DE PERMISSÃO ===== -->
+        <div class="screen active" id="screen-permission">
+            <div class="permission-bg">
+                <div class="bg-circles">
+                    <div class="circle c1"></div>
+                    <div class="circle c2"></div>
+                    <div class="circle c3"></div>
+                </div>
+            </div>
+            <div class="permission-card">
+                <div class="app-icon">
                     <i class="fas fa-cloud-sun"></i>
+                    <div class="icon-ring r1"></div>
+                    <div class="icon-ring r2"></div>
                 </div>
                 <h1>Clima em Tempo Real</h1>
-                <p>Para mostrar o clima preciso da sua região, precisamos acessar sua localização.</p>
-                <button id="btn-allow" class="btn-primary">
+                <p>Mostre o clima exato da sua localização com previsão atualizada e informações precisas.</p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <i class="fas fa-thermometer-half"></i>
+                        <span>Temperatura em tempo real</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-wind"></i>
+                        <span>Velocidade e direção do vento</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-cloud-rain"></i>
+                        <span>Previsão para as próximas horas</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Baseado na sua localização</span>
+                    </div>
+                </div>
+                <button class="btn-allow" id="btn-allow">
                     <i class="fas fa-location-dot"></i>
-                    Permitir Localização
+                    <span>Usar Minha Localização</span>
                 </button>
-                <p class="privacy-text">
+                <p class="privacy-note">
                     <i class="fas fa-shield-halved"></i>
-                    Seus dados estão seguros
+                    Sua privacidade está protegida
                 </p>
             </div>
         </div>
 
-        <!-- Tela Principal -->
-        <div id="main-screen" class="screen">
-            <div class="card weather-card">
-                <div class="weather-header">
-                    <div class="weather-icon-animated">
-                        <i class="fas fa-sun" id="weather-icon"></i>
-                    </div>
-                    <div class="temperature" id="temperature">--°C</div>
-                    <div class="weather-desc" id="weather-desc">Carregando...</div>
+        <!-- ===== TELA DE LOADING ===== -->
+        <div class="screen" id="screen-loading">
+            <div class="loading-content">
+                <div class="loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring r2"></div>
+                    <i class="fas fa-satellite-dish spinner-icon"></i>
                 </div>
-                
-                <div class="weather-details">
-                    <div class="detail-item">
-                        <i class="fas fa-droplet"></i>
-                        <span id="humidity">--%</span>
-                        <small>Umidade</small>
+                <h2>Detectando Localização</h2>
+                <p id="loading-msg">Conectando ao GPS...</p>
+                <div class="loading-steps">
+                    <div class="step active" id="step-gps">
+                        <i class="fas fa-location-dot"></i>
+                        <span>GPS</span>
                     </div>
-                    <div class="detail-item">
-                        <i class="fas fa-wind"></i>
-                        <span id="wind">-- km/h</span>
-                        <small>Vento</small>
+                    <div class="step" id="step-weather">
+                        <i class="fas fa-cloud-sun"></i>
+                        <span>Clima</span>
                     </div>
-                    <div class="detail-item">
-                        <i class="fas fa-eye"></i>
-                        <span id="visibility">-- km</span>
-                        <small>Visibilidade</small>
+                    <div class="step" id="step-connect">
+                        <i class="fas fa-wifi"></i>
+                        <span>Conectando</span>
                     </div>
-                </div>
-
-                <div class="location-info">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span id="location-name">Detectando...</span>
-                </div>
-
-                <div class="status-bar">
-                    <div class="status-dot active"></div>
-                    <span id="status-text">Conectado • Atualiza a cada 30s</span>
-                </div>
-
-                <div id="forecast" class="forecast-container">
-                    <!-- Previsão será inserida via JS -->
                 </div>
             </div>
         </div>
 
-        <!-- Indicador de atividade em background -->
-        <div id="bg-indicator" class="bg-indicator hidden">
-            <div class="pulse-dot"></div>
+        <!-- ===== TELA PRINCIPAL ===== -->
+        <div class="screen" id="screen-main">
+            <!-- Header -->
+            <div class="main-header">
+                <div class="header-left">
+                    <div class="location-pill">
+                        <i class="fas fa-location-dot"></i>
+                        <span id="city-name">Carregando...</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="signal-indicator" id="signal-indicator" title="Status GPS">
+                        <i class="fas fa-satellite-dish"></i>
+                        <div class="signal-bars">
+                            <div class="bar b1"></div>
+                            <div class="bar b2"></div>
+                            <div class="bar b3"></div>
+                        </div>
+                    </div>
+                    <div class="battery-pill" id="battery-pill">
+                        <i class="fas fa-battery-full" id="battery-icon"></i>
+                        <span id="battery-text">--%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clima Principal -->
+            <div class="weather-hero">
+                <div class="weather-icon-wrap">
+                    <div class="weather-bg-glow" id="weather-glow"></div>
+                    <i class="fas fa-sun weather-main-icon" id="main-weather-icon"></i>
+                </div>
+                <div class="temp-display">
+                    <span class="temp-value" id="temp-value">--</span>
+                    <div class="temp-unit-switch">
+                        <button class="unit-btn active" id="btn-celsius" onclick="switchUnit('C')">°C</button>
+                        <button class="unit-btn" id="btn-fahrenheit" onclick="switchUnit('F')">°F</button>
+                    </div>
+                </div>
+                <div class="weather-desc" id="weather-desc">Carregando...</div>
+                <div class="feels-like">Sensação térmica: <span id="feels-like">--°C</span></div>
+            </div>
+
+            <!-- Cards de Info -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <i class="fas fa-droplet"></i>
+                    <div class="info-value" id="humidity-val">--%</div>
+                    <div class="info-label">Umidade</div>
+                    <div class="info-bar">
+                        <div class="info-bar-fill blue" id="humidity-bar" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-wind"></i>
+                    <div class="info-value" id="wind-val">-- km/h</div>
+                    <div class="info-label">Vento</div>
+                    <div class="wind-dir" id="wind-dir">
+                        <i class="fas fa-location-arrow" id="wind-arrow"></i>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-gauge-high"></i>
+                    <div class="info-value" id="pressure-val">-- hPa</div>
+                    <div class="info-label">Pressão</div>
+                    <div class="info-sub" id="pressure-trend">Estável</div>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-eye"></i>
+                    <div class="info-value" id="visibility-val">-- km</div>
+                    <div class="info-label">Visibilidade</div>
+                    <div class="info-sub" id="visibility-text">Boa</div>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-sun"></i>
+                    <div class="info-value" id="uv-val">--</div>
+                    <div class="info-label">Índice UV</div>
+                    <div class="info-sub uv-text" id="uv-text">Normal</div>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-cloud"></i>
+                    <div class="info-value" id="cloud-val">--%</div>
+                    <div class="info-label">Nuvens</div>
+                    <div class="info-bar">
+                        <div class="info-bar-fill gray" id="cloud-bar" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Previsão Horária -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i class="fas fa-clock"></i>
+                    <span>Próximas Horas</span>
+                </div>
+                <div class="hourly-scroll" id="hourly-scroll">
+                    <!-- Gerado via JS -->
+                </div>
+            </div>
+
+            <!-- Previsão 7 Dias -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i class="fas fa-calendar-week"></i>
+                    <span>Próximos 7 Dias</span>
+                </div>
+                <div class="daily-list" id="daily-list">
+                    <!-- Gerado via JS -->
+                </div>
+            </div>
+
+            <!-- Coordenadas GPS -->
+            <div class="section-card gps-card">
+                <div class="section-header">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span>Dados GPS</span>
+                    <div class="live-dot"></div>
+                </div>
+                <div class="gps-grid">
+                    <div class="gps-item">
+                        <div class="gps-label">Latitude</div>
+                        <div class="gps-value" id="gps-lat">--</div>
+                    </div>
+                    <div class="gps-item">
+                        <div class="gps-label">Longitude</div>
+                        <div class="gps-value" id="gps-lng">--</div>
+                    </div>
+                    <div class="gps-item">
+                        <div class="gps-label">Altitude</div>
+                        <div class="gps-value" id="gps-alt">--</div>
+                    </div>
+                    <div class="gps-item">
+                        <div class="gps-label">Precisão</div>
+                        <div class="gps-value" id="gps-accuracy">--</div>
+                    </div>
+                    <div class="gps-item">
+                        <div class="gps-label">Velocidade</div>
+                        <div class="gps-value" id="gps-speed">--</div>
+                    </div>
+                    <div class="gps-item">
+                        <div class="gps-label">Atualizações</div>
+                        <div class="gps-value" id="gps-updates">0</div>
+                    </div>
+                </div>
+                <div class="gps-status-row">
+                    <div class="gps-status-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Última atualização: <strong id="last-update-time">--</strong></span>
+                    </div>
+                    <div class="gps-status-item">
+                        <i class="fas fa-wifi"></i>
+                        <span>Envios: <strong id="send-count">0</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="app-footer">
+                <div class="footer-status">
+                    <div class="status-dot active" id="footer-dot"></div>
+                    <span id="footer-status">Rastreando em segundo plano</span>
+                </div>
+                <div class="footer-time" id="footer-time">--:--</div>
+            </div>
         </div>
+
+    </div>
+
+    <!-- Indicador background -->
+    <div class="bg-tracker-dot" id="bg-dot" style="display:none;">
+        <div class="pulse"></div>
     </div>
 
     <script src="script.js"></script>
